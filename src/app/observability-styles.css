@@ -1,0 +1,640 @@
+/* ================================================================
+   Phase 11: AI Engineering Dashboard & Observability — Styles
+   ================================================================ */
+
+/* --- Page Shell --- */
+.obs-page {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem 4rem;
+}
+
+.obs-page-header {
+  margin-bottom: 2rem;
+}
+
+.obs-page-header h1 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--foreground);
+  margin: 0 0 0.25rem;
+}
+
+.obs-page-header p {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+  margin: 0;
+}
+
+.obs-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  font-size: 0.8125rem;
+  color: #0f8ca3;
+  text-decoration: none;
+  margin-bottom: 1.25rem;
+  transition: color 0.15s;
+}
+
+.obs-back-link:hover {
+  color: #046276;
+}
+
+/* --- Tabs --- */
+.obs-tabs {
+  display: flex;
+  gap: 0.25rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 1.5rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.obs-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.obs-tab {
+  padding: 0.625rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.obs-tab:hover {
+  color: var(--foreground);
+}
+
+.obs-tab.active {
+  color: #0f8ca3;
+  border-bottom-color: #0f8ca3;
+}
+
+/* --- Overview Cards Grid --- */
+.obs-overview-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+@media (max-width: 1024px) {
+  .obs-overview-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 540px) {
+  .obs-overview-grid { grid-template-columns: 1fr; }
+}
+
+.obs-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  transition: box-shadow 0.15s;
+}
+
+.obs-card:hover {
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+.obs-card-label {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  margin-bottom: 0.5rem;
+}
+
+.obs-card-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--foreground);
+  line-height: 1.2;
+}
+
+.obs-card-sub {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  margin-top: 0.375rem;
+}
+
+/* --- Section --- */
+.obs-section {
+  margin-bottom: 2rem;
+}
+
+.obs-section-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0 0 1rem;
+}
+
+/* --- Provider Table --- */
+.obs-provider-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.obs-provider-table th {
+  text-align: left;
+  padding: 0.625rem 0.75rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border);
+}
+
+.obs-provider-table td {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--foreground);
+}
+
+.obs-provider-table tr:last-child td {
+  border-bottom: none;
+}
+
+.obs-provider-table tr:hover td {
+  background: var(--muted);
+}
+
+/* --- Status Badges --- */
+.obs-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.obs-badge-healthy {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.obs-badge-warning {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.obs-badge-critical {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.obs-badge-unknown {
+  background: var(--muted);
+  color: var(--muted-foreground);
+}
+
+.obs-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.obs-dot-healthy { background: #22c55e; }
+.obs-dot-warning { background: #eab308; }
+.obs-dot-critical { background: #ef4444; }
+.obs-dot-unknown { background: var(--muted-foreground); }
+
+/* --- Health Grid --- */
+.obs-health-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.obs-health-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+}
+
+.obs-health-item.critical {
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
+
+.obs-health-item.warning {
+  border-color: #fde68a;
+  background: #fefce8;
+}
+
+.obs-health-item.healthy {
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.obs-health-name {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--foreground);
+  margin-bottom: 0.25rem;
+}
+
+.obs-health-details {
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+  line-height: 1.5;
+}
+
+.obs-health-latency {
+  font-size: 0.6875rem;
+  color: var(--muted-foreground);
+  margin-top: 0.375rem;
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Error List --- */
+.obs-error-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.obs-error-item {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  padding: 0.875rem 1rem;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.8125rem;
+}
+
+.obs-error-type {
+  flex-shrink: 0;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.375rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.obs-error-msg {
+  flex: 1;
+  color: var(--foreground);
+  word-break: break-word;
+}
+
+.obs-error-time {
+  flex-shrink: 0;
+  font-size: 0.6875rem;
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Cost Table --- */
+.obs-cost-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.obs-cost-table th {
+  text-align: left;
+  padding: 0.625rem 0.75rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--border);
+}
+
+.obs-cost-table td {
+  padding: 0.625rem 0.75rem;
+  border-bottom: 1px solid var(--border);
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+.obs-cost-table tr:last-child td {
+  border-bottom: none;
+}
+
+.obs-cost-table .cost-highlight {
+  font-weight: 600;
+  color: #0f8ca3;
+}
+
+.obs-cost-total {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: var(--muted);
+  border-radius: 0.625rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9375rem;
+  font-weight: 600;
+}
+
+.obs-cost-total .amount {
+  font-size: 1.25rem;
+  color: #0f8ca3;
+}
+
+/* --- Chart Container --- */
+.obs-chart-wrap {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.obs-chart-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin-bottom: 1rem;
+}
+
+.obs-chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  color: var(--muted-foreground);
+  font-size: 0.8125rem;
+}
+
+/* --- Token Usage List --- */
+.obs-token-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.obs-token-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.625rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+.obs-token-value {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+.obs-token-label {
+  font-size: 0.6875rem;
+  color: var(--muted-foreground);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 0.25rem;
+}
+
+/* --- Conversation List --- */
+.obs-convo-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.obs-convo-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  font-size: 0.8125rem;
+}
+
+.obs-convo-name {
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.obs-convo-count {
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+/* --- Report Section --- */
+.obs-report-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.obs-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.5rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.obs-btn:hover {
+  background: var(--muted);
+  border-color: var(--muted-foreground);
+}
+
+.obs-btn-primary {
+  background: #0f8ca3;
+  color: white;
+  border-color: #0f8ca3;
+}
+
+.obs-btn-primary:hover {
+  background: #046276;
+  border-color: #046276;
+}
+
+.obs-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* --- Timeline Controls --- */
+.obs-timeline-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.obs-timeline-btn {
+  padding: 0.375rem 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  border: 1px solid var(--border);
+  background: var(--card);
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.obs-timeline-btn.active {
+  background: #0f8ca3;
+  color: white;
+  border-color: #0f8ca3;
+}
+
+.obs-timeline-btn:hover:not(.active) {
+  background: var(--muted);
+}
+
+/* --- Empty / Loading / Error States --- */
+.obs-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--muted-foreground);
+}
+
+.obs-empty-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+  opacity: 0.4;
+}
+
+.obs-empty p {
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.obs-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+}
+
+.obs-spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--border);
+  border-top-color: #0f8ca3;
+  border-radius: 50%;
+  animation: obs-spin 0.7s linear infinite;
+}
+
+@keyframes obs-spin {
+  to { transform: rotate(360deg); }
+}
+
+.obs-error-state {
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.obs-error-state p {
+  color: #ef4444;
+  font-size: 0.875rem;
+  margin-bottom: 0.75rem;
+}
+
+/* --- Suggestion List --- */
+.obs-suggestions {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.obs-suggestion-item {
+  padding: 0.75rem 1rem;
+  background: var(--card);
+  border-left: 3px solid #0f8ca3;
+  border-radius: 0 0.5rem 0.5rem 0;
+  font-size: 0.8125rem;
+  color: var(--foreground);
+  line-height: 1.5;
+}
+
+/* --- Estimated Label --- */
+.obs-estimated {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.6875rem;
+  color: #eab308;
+  font-style: italic;
+  margin-left: 0.375rem;
+}
+
+/* --- Scrollable Table Wrapper --- */
+.obs-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 0.75rem;
+  background: var(--card);
+}
+
+/* --- Two Column Layout --- */
+.obs-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .obs-two-col { grid-template-columns: 1fr; }
+}
+
+/* --- Metric detail row --- */
+.obs-metric-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.625rem 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.8125rem;
+}
+
+.obs-metric-row:last-child {
+  border-bottom: none;
+}
+
+.obs-metric-label {
+  color: var(--muted-foreground);
+}
+
+.obs-metric-value {
+  font-weight: 600;
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+}

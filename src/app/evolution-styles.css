@@ -1,0 +1,105 @@
+/* ================================================================
+   Phase 10: Architecture Evolution Styles
+   ================================================================ */
+.evol-dashboard { display: flex; flex-direction: column; gap: 20px; }
+
+/* --- Graph --- */
+.evol-graph-container {
+  position: relative;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  min-height: 400px;
+}
+.evol-graph-svg { width: 100%; height: 420px; display: block; }
+.evol-graph-edge { opacity: 0.6; }
+.evol-graph-label { pointer-events: none; user-select: none; font-family: system-ui, sans-serif; font-weight: 600; }
+.evol-graph-info {
+  position: absolute; bottom: 12px; left: 12px; background: rgba(255,255,255,0.95);
+  border: 1px solid #e5e7eb; border-radius: 8px; padding: 10px 14px;
+  font-size: 0.8125rem; color: #374151; display: flex; flex-direction: column; gap: 2px;
+  backdrop-filter: blur(4px);
+}
+.evol-graph-info strong { color: #1f2937; }
+
+/* --- Timeline Chart --- */
+.evol-timeline-chart {
+  display: flex; align-items: flex-end; gap: 6px; height: 200px; padding: 0 4px; overflow-x: auto;
+}
+.evol-timeline-bar-group {
+  display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; min-width: 36px; height: 100%;
+}
+.evol-timeline-bars { display: flex; gap: 3px; align-items: flex-end; flex: 1; width: 100%; }
+.evol-timeline-bar-wrap {
+  flex: 1; background: #f9fafb; border-radius: 3px 3px 0 0; display: flex; align-items: flex-end; overflow: hidden;
+}
+.evol-timeline-bar {
+  width: 100%; border-radius: 3px 3px 0 0; transition: height 0.4s ease; min-height: 2px;
+}
+.evol-timeline-bar.commits { background: linear-gradient(180deg, #0f8ca3, #10b981); }
+.evol-timeline-bar.additions { background: linear-gradient(180deg, #8b5cf6, #a78bfa); }
+.evol-timeline-label { font-size: 0.65rem; color: #9ca3af; white-space: nowrap; }
+.evol-timeline-legend { display: flex; gap: 16px; align-items: center; padding: 8px 0; }
+.evol-legend-item {
+  display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 4px; vertical-align: middle;
+}
+.evol-legend-item.commits { background: #0f8ca3; }
+.evol-legend-item.additions { background: #8b5cf6; }
+
+/* --- Folder Evolution --- */
+.evol-folder-list { display: flex; flex-direction: column; gap: 4px; max-height: 400px; overflow-y: auto; }
+.evol-folder-item { border: 1px solid #f3f4f6; border-radius: 8px; overflow: hidden; }
+.evol-folder-header {
+  display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer;
+  transition: background 0.15s;
+}
+.evol-folder-header:hover { background: #f9fafb; }
+.evol-folder-path { font-family: monospace; font-size: 0.875rem; font-weight: 600; color: #1f2937; flex: 1; }
+.evol-folder-stat { font-size: 0.75rem; color: #6b7280; }
+.evol-folder-activity { font-size: 0.75rem; color: #0f8ca3; font-weight: 500; }
+.evol-folder-arrow { font-size: 0.7rem; color: #9ca3af; }
+.evol-folder-details {
+  padding: 10px 14px; background: #f9fafb; font-size: 0.8125rem; color: #374151;
+  display: flex; flex-direction: column; gap: 4px; border-top: 1px solid #e5e7eb;
+}
+
+/* --- Module Evolution --- */
+.evol-modules-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+.evol-module-list { display: flex; flex-direction: column; gap: 6px; max-height: 400px; overflow-y: auto; }
+.evol-module-item {
+  padding: 10px 14px; border: 1px solid #f3f4f6; border-radius: 8px; transition: border-color 0.15s;
+}
+.evol-module-item:hover { border-color: #0f8ca3; }
+.evol-module-name { font-size: 0.875rem; font-weight: 600; color: #1f2937; margin-bottom: 4px; }
+.evol-module-stats { display: flex; gap: 12px; font-size: 0.75rem; color: #6b7280; flex-wrap: wrap; }
+.evol-module-dates { font-size: 0.7rem; color: #9ca3af; margin-top: 4px; }
+
+/* --- Milestones --- */
+.evol-milestone-list { display: flex; flex-direction: column; gap: 0; max-height: 400px; overflow-y: auto; padding-left: 16px; border-left: 2px solid #e5e7eb; margin-left: 8px; }
+.evol-milestone-item { display: flex; gap: 12px; padding: 10px 0; position: relative; }
+.evol-milestone-dot {
+  width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; margin-left: -22px; margin-top: 3px;
+  border: 2px solid #fff; box-shadow: 0 0 0 1px #e5e7eb;
+}
+.evol-milestone-content { flex: 1; }
+.evol-milestone-title { font-size: 0.875rem; font-weight: 600; color: #1f2937; }
+.evol-milestone-desc { font-size: 0.8125rem; color: #6b7280; margin-top: 2px; line-height: 1.4; }
+.evol-milestone-meta { display: flex; gap: 10px; font-size: 0.7rem; color: #9ca3af; margin-top: 4px; }
+
+/* --- AI Section --- */
+.evol-ai-section { margin-top: 8px; }
+.evol-ai-overview { font-size: 0.9375rem; color: #374151; line-height: 1.7; margin: 0 0 16px; padding: 14px 18px; background: #f0fdfa; border: 1px solid #ccfbf1; border-radius: 8px; }
+
+/* --- Search Results --- */
+.evol-search-results { background: #fff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 12px 16px; }
+.evol-search-item { display: flex; flex-direction: column; gap: 2px; padding: 8px 0; border-bottom: 1px solid #f3f4f6; }
+.evol-search-item strong { font-size: 0.875rem; color: #1f2937; }
+.evol-search-item span { font-size: 0.75rem; color: #9ca3af; }
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+  .evol-graph-svg { height: 280px; }
+  .evol-timeline-chart { height: 150px; }
+  .evol-folder-stats, .evol-module-stats { flex-direction: column; gap: 2px; }
+}
