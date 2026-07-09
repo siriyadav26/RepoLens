@@ -38,8 +38,29 @@ function RepoLensLogo({ className }: { className?: string }) {
   );
 }
 
+/* ── Two-phase flip variants ── */
+const flipOut = {
+  initial: { rotateY: 0, opacity: 1, scale: 1 },
+  exit: {
+    rotateY: 90,
+    opacity: 0,
+    scale: 0.95,
+    transition: { duration: 0.35, ease: "easeIn" },
+  },
+};
+
+const flipIn = {
+  initial: { rotateY: -90, opacity: 0, scale: 0.95 },
+  animate: {
+    rotateY: 0,
+    opacity: 1,
+    scale: 1,
+    transition: { duration: 0.35, ease: "easeOut" },
+  },
+};
+
 export default function AuthCard() {
-  const [isSignIn, setIsSignIn] = useState(false);
+  const [isSignIn, setIsSignIn] = useState(true);
 
   // Sign In fields
   const [loginEmail, setLoginEmail] = useState("");
@@ -149,7 +170,7 @@ export default function AuthCard() {
     setLoading(true);
     try {
       const supabase = createClient();
-      const { error: signUpError } = await supabase.auth.signUp({
+      const { data, error: signUpError } = await supabase.auth.signUp({
         email: signupEmail,
         password: signupPassword,
         options: {
@@ -159,6 +180,12 @@ export default function AuthCard() {
 
       if (signUpError) {
         setError(signUpError.message);
+        setLoading(false);
+        return;
+      }
+
+      if (!data.session) {
+        setError("Account created! Please check your email to verify your account before logging in.");
         setLoading(false);
         return;
       }
@@ -182,12 +209,7 @@ export default function AuthCard() {
   }
 
   return (
-    <motion.div 
-      className="auth-card"
-      initial={{ opacity: 0, y: 30, scale: 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-    >
+    <div className="auth-card" style={{ perspective: 1200 }}>
       {/* Animated gradient orbs */}
       <div className="auth-orb auth-orb-1" />
       <div className="auth-orb auth-orb-2" />
@@ -210,182 +232,179 @@ export default function AuthCard() {
         ))}
       </div>
 
-      {/* Logos with brand name */}
-      <div className={`auth-brand auth-brand-left ${isSignIn ? "" : "show"}`}>
-        <RepoLensLogo className="auth-brand-icon" />
-        <span className="auth-brand-text">RepoLens <strong>AI</strong></span>
-      </div>
-      <div className={`auth-brand auth-brand-right ${isSignIn ? "show" : ""}`}>
+      {/* Brand logo — always visible */}
+      <div className={`auth-brand ${isSignIn ? "auth-brand-left" : "auth-brand-right"} show`}>
         <RepoLensLogo className="auth-brand-icon" />
         <span className="auth-brand-text">RepoLens <strong>AI</strong></span>
       </div>
 
-      {/* Sign Up Form */}
+      {/* Flip animation container */}
       <AnimatePresence mode="wait">
-      {!isSignIn ? (
-        <motion.div 
-          className="auth-form-wrapper" 
-          key="signup"
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -30 }}
-          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <form className="auth-form" onSubmit={handleSignup}>
-            <h2 className="auth-title">Create Account</h2>
-            <p className="auth-subtitle">Get started with RepoLens AI</p>
+        {isSignIn ? (
+          <motion.div
+            className="auth-form-wrapper"
+            key="signin"
+            variants={{ ...flipOut, ...flipIn }}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            style={{ perspective: 1200 }}
+          >
+            <form className="auth-form" onSubmit={handleLogin}>
+              <h2 className="auth-title">Welcome Back</h2>
+              <p className="auth-subtitle">Sign in to continue</p>
 
-            {error && <div className="error-msg fade-in">{error}</div>}
+              {error && <div className="error-msg fade-in">{error}</div>}
 
-            <div className="auth-field-group">
-              <div className="auth-field">
-                <input
-                  type="text"
-                  placeholder=" "
-                  value={fullName}
-                  onChange={(e) => { setFullName(e.target.value); clearFieldError("fullName"); }}
-                  className={validationErrors.fullName ? "input-error" : ""}
-                  disabled={loading}
-                  autoComplete="name"
-                  id="su-name"
-                />
-                <label htmlFor="su-name">Full Name</label>
+              <div className="auth-field-group">
+                <div className="auth-field">
+                  <input
+                    type="email"
+                    placeholder=" "
+                    value={loginEmail}
+                    onChange={(e) => { setLoginEmail(e.target.value); clearFieldError("loginEmail"); }}
+                    className={validationErrors.loginEmail ? "input-error" : ""}
+                    disabled={loading}
+                    autoComplete="email"
+                    id="si-email"
+                  />
+                  <label htmlFor="si-email">Email</label>
+                </div>
+                {validationErrors.loginEmail && (
+                  <div className="validation-msg fade-in">{validationErrors.loginEmail}</div>
+                )}
+
+                <div className="auth-field">
+                  <input
+                    type="password"
+                    placeholder=" "
+                    value={loginPassword}
+                    onChange={(e) => { setLoginPassword(e.target.value); clearFieldError("loginPassword"); }}
+                    className={validationErrors.loginPassword ? "input-error" : ""}
+                    disabled={loading}
+                    autoComplete="current-password"
+                    id="si-pass"
+                  />
+                  <label htmlFor="si-pass">Password</label>
+                </div>
+                {validationErrors.loginPassword && (
+                  <div className="validation-msg fade-in">{validationErrors.loginPassword}</div>
+                )}
               </div>
-              {validationErrors.fullName && (
-                <div className="validation-msg fade-in">{validationErrors.fullName}</div>
-              )}
 
-              <div className="auth-field">
-                <input
-                  type="email"
-                  placeholder=" "
-                  value={signupEmail}
-                  onChange={(e) => { setSignupEmail(e.target.value); clearFieldError("signupEmail"); }}
-                  className={validationErrors.signupEmail ? "input-error" : ""}
-                  disabled={loading}
-                  autoComplete="email"
-                  id="su-email"
-                />
-                <label htmlFor="su-email">Email</label>
+              <div className="auth-forgot-row">
+                <Link href="/forgot-password" className="auth-forgot">
+                  Forgot Password?
+                </Link>
               </div>
-              {validationErrors.signupEmail && (
-                <div className="validation-msg fade-in">{validationErrors.signupEmail}</div>
-              )}
 
-              <div className="auth-field">
-                <input
-                  type="password"
-                  placeholder=" "
-                  value={signupPassword}
-                  onChange={(e) => { setSignupPassword(e.target.value); clearFieldError("signupPassword"); }}
-                  className={validationErrors.signupPassword ? "input-error" : ""}
-                  disabled={loading}
-                  autoComplete="new-password"
-                  id="su-pass"
-                />
-                <label htmlFor="su-pass">Password</label>
+              <button type="submit" disabled={loading} className="auth-btn">
+                {loading ? <span className="spinner" /> : (
+                  <>
+                    <span>LOGIN</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+                      <polyline points="10 17 15 12 10 7" />
+                      <line x1="15" y1="12" x2="3" y2="12" />
+                    </svg>
+                  </>
+                )}
+              </button>
+
+              <div className="auth-switch-row">
+                <span className="auth-switch-label">Don&apos;t have an account?</span>
+                <span className="auth-switch" onClick={handleToggle}>Register</span>
               </div>
-              {validationErrors.signupPassword && (
-                <div className="validation-msg fade-in">{validationErrors.signupPassword}</div>
-              )}
-            </div>
+            </form>
+          </motion.div>
+        ) : (
+          <motion.div
+            className="auth-form-wrapper"
+            key="signup"
+            variants={{ ...flipOut, ...flipIn }}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            style={{ perspective: 1200 }}
+          >
+            <form className="auth-form" onSubmit={handleSignup}>
+              <h2 className="auth-title">Create Account</h2>
+              <p className="auth-subtitle">Get started with RepoLens AI</p>
 
-            <button type="submit" disabled={loading} className="auth-btn">
-              {loading ? <span className="spinner" /> : (
-                <>
-                  <span>CREATE ACCOUNT</span>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M5 12h14M12 5l7 7-7 7" />
-                  </svg>
-                </>
-              )}
-            </button>
+              {error && <div className="error-msg fade-in">{error}</div>}
 
-            <div className="auth-switch-row">
-              <span className="auth-switch-label">Already have an account?</span>
-              <span className="auth-switch" onClick={handleToggle}>Sign In</span>
-            </div>
-          </form>
-        </motion.div>
-      ) : (
-        /* Sign In Form */
-        <motion.div 
-          className="auth-form-wrapper" 
-          key="signin"
-          initial={{ opacity: 0, x: -30 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: 30 }}
-          transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-        >
-          <form className="auth-form" onSubmit={handleLogin}>
-            <h2 className="auth-title">Welcome Back</h2>
-            <p className="auth-subtitle">Sign in to continue</p>
+              <div className="auth-field-group">
+                <div className="auth-field">
+                  <input
+                    type="text"
+                    placeholder=" "
+                    value={fullName}
+                    onChange={(e) => { setFullName(e.target.value); clearFieldError("fullName"); }}
+                    className={validationErrors.fullName ? "input-error" : ""}
+                    disabled={loading}
+                    autoComplete="name"
+                    id="su-name"
+                  />
+                  <label htmlFor="su-name">Full Name</label>
+                </div>
+                {validationErrors.fullName && (
+                  <div className="validation-msg fade-in">{validationErrors.fullName}</div>
+                )}
 
-            {error && <div className="error-msg fade-in">{error}</div>}
+                <div className="auth-field">
+                  <input
+                    type="email"
+                    placeholder=" "
+                    value={signupEmail}
+                    onChange={(e) => { setSignupEmail(e.target.value); clearFieldError("signupEmail"); }}
+                    className={validationErrors.signupEmail ? "input-error" : ""}
+                    disabled={loading}
+                    autoComplete="email"
+                    id="su-email"
+                  />
+                  <label htmlFor="su-email">Email</label>
+                </div>
+                {validationErrors.signupEmail && (
+                  <div className="validation-msg fade-in">{validationErrors.signupEmail}</div>
+                )}
 
-            <div className="auth-field-group">
-              <div className="auth-field">
-                <input
-                  type="email"
-                  placeholder=" "
-                  value={loginEmail}
-                  onChange={(e) => { setLoginEmail(e.target.value); clearFieldError("loginEmail"); }}
-                  className={validationErrors.loginEmail ? "input-error" : ""}
-                  disabled={loading}
-                  autoComplete="email"
-                  id="si-email"
-                />
-                <label htmlFor="si-email">Email</label>
+                <div className="auth-field">
+                  <input
+                    type="password"
+                    placeholder=" "
+                    value={signupPassword}
+                    onChange={(e) => { setSignupPassword(e.target.value); clearFieldError("signupPassword"); }}
+                    className={validationErrors.signupPassword ? "input-error" : ""}
+                    disabled={loading}
+                    autoComplete="new-password"
+                    id="su-pass"
+                  />
+                  <label htmlFor="su-pass">Password</label>
+                </div>
+                {validationErrors.signupPassword && (
+                  <div className="validation-msg fade-in">{validationErrors.signupPassword}</div>
+                )}
               </div>
-              {validationErrors.loginEmail && (
-                <div className="validation-msg fade-in">{validationErrors.loginEmail}</div>
-              )}
 
-              <div className="auth-field">
-                <input
-                  type="password"
-                  placeholder=" "
-                  value={loginPassword}
-                  onChange={(e) => { setLoginPassword(e.target.value); clearFieldError("loginPassword"); }}
-                  className={validationErrors.loginPassword ? "input-error" : ""}
-                  disabled={loading}
-                  autoComplete="current-password"
-                  id="si-pass"
-                />
-                <label htmlFor="si-pass">Password</label>
+              <button type="submit" disabled={loading} className="auth-btn">
+                {loading ? <span className="spinner" /> : (
+                  <>
+                    <span>CREATE ACCOUNT</span>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                  </>
+                )}
+              </button>
+
+              <div className="auth-switch-row">
+                <span className="auth-switch-label">Already have an account?</span>
+                <span className="auth-switch" onClick={handleToggle}>Sign In</span>
               </div>
-              {validationErrors.loginPassword && (
-                <div className="validation-msg fade-in">{validationErrors.loginPassword}</div>
-              )}
-            </div>
-
-            <div className="auth-forgot-row">
-              <Link href="/forgot-password" className="auth-forgot">
-                Forgot Password?
-              </Link>
-            </div>
-
-            <button type="submit" disabled={loading} className="auth-btn">
-              {loading ? <span className="spinner" /> : (
-                <>
-                  <span>LOGIN</span>
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                    <polyline points="10 17 15 12 10 7" />
-                    <line x1="15" y1="12" x2="3" y2="12" />
-                  </svg>
-                </>
-              )}
-            </button>
-
-            <div className="auth-switch-row">
-              <span className="auth-switch-label">Don&apos;t have an account?</span>
-              <span className="auth-switch" onClick={handleToggle}>Register</span>
-            </div>
-          </form>
-        </motion.div>
-      )}
+            </form>
+          </motion.div>
+        )}
       </AnimatePresence>
-    </motion.div>
+    </div>
   );
 }
