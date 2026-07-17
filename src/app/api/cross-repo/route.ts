@@ -15,18 +15,22 @@ import {
   searchAcrossRepos,
   generateAIAnalysis,
   crossRepoRAG,
-  generateReportMarkdown,
-  generateReportText,
 } from "@/lib/cross-repo/analysis";
 import { saveReport, getReports, saveSimilarity } from "@/lib/cross-repo/db";
 import { getUserRepositories } from "@/lib/supabase/repositories";
-import type { CrossRepoSearchParams, ComparisonType } from "@/lib/cross-repo/types";
+import type { CrossRepoSearchParams, ComparisonType, SimilarityScore, ContributorComparison } from "@/lib/cross-repo/types";
+import { checkRateLimit, crossRepoLimit, aiLimit } from "@/lib/rate-limit";
+import { safeErrorResponse, clampInt, validateUUIDs } from "@/lib/api-error";
 
 export async function GET(request: Request) {
   try {
     const supabase = await createClient();
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    // ── Rate Limiting ─────────────────────────────────────────────
+    const limited = checkRateLimit(user.id, "cross-repo-get", crossRepoLimit);
+    if (limited) return limited;
 
     const { searchParams } = new URL(request.url);
     const action = searchParams.get("action");
@@ -45,15 +49,25 @@ export async function GET(request: Request) {
 
     // Multi-repo search
     if (action === "search") {
+      // ── Input Validation ───────────────────────────────────────
+      const rawLimit = clampInt(searchParams.get("limit"), 1, 100, 50);
+      const rawRepoIds = searchParams.get("repositoryIds")?.split(",").filter(Boolean) ?? [];
+      if (rawRepoIds.length > 0) {
+        const uuidError = validateUUIDs(rawRepoIds);
+        if (uuidError) {
+          return NextResponse.json({ error: uuidError }, { status: 400 });
+        }
+      }
+
       const params: CrossRepoSearchParams = {
         query: searchParams.get("query") || "",
-        repositoryIds: searchParams.get("repositoryIds")?.split(",").filter(Boolean),
+        repositoryIds: rawRepoIds.length > 0 ? rawRepoIds : undefined,
         language: searchParams.get("language") || undefined,
         owner: searchParams.get("owner") || undefined,
         since: searchParams.get("since") || undefined,
         until: searchParams.get("until") || undefined,
         topic: searchParams.get("topic") || undefined,
-        limit: parseInt(searchParams.get("limit") || "50", 10),
+        limit: rawLimit,
       };
       const results = await searchAcrossRepos(user.id, params);
       return NextResponse.json({ results });
@@ -61,10 +75,17 @@ export async function GET(request: Request) {
 
     // Full analysis for selected repos
     if (action === "analyze") {
-      const repoIds = searchParams.get("repositoryIds")?.split(",").filter(Boolean);
-      if (!repoIds || repoIds.length < 2) {
+      const rawRepoIds = searchParams.get("repositoryIds")?.split(",").filter(Boolean);
+      if (!rawRepoIds || rawRepoIds.length < 2) {
         return NextResponse.json({ error: "Select at least 2 repositories" }, { status: 400 });
       }
+
+      // ── UUID Validation ────────────────────────────────────────
+      const uuidError = validateUUIDs(rawRepoIds);
+      if (uuidError) {
+        return NextResponse.json({ error: uuidError }, { status: 400 });
+      }
+      const repoIds = rawRepoIds;
 
       // Get repo metadata for similarity
       const allRepos = await getUserRepositories(user.id);
@@ -84,7 +105,7 @@ export async function GET(request: Request) {
       const techComp = techStacks.length >= 2 ? compareTechStacks(techStacks) : null;
 
       // Similarity (for all pairs)
-      let similarity = null;
+      let similarity: (SimilarityScore & { repositoryIdA: string; repositoryIdB: string }) | null = null;
       if (selectedRepos.length >= 2) {
         const a = selectedRepos[0];
         const b = selectedRepos[1];
@@ -98,7 +119,7 @@ export async function GET(request: Request) {
       }
 
       // Contributor comparison
-      let contributorComp = null;
+      let contributorComp: ContributorComparison | null = null;
       if (repoIds.length >= 2) {
         contributorComp = await compareContributors(user.id, repoIds[0], repoIds[1]);
       }
@@ -114,14 +135,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ error: "Missing 'action' parameter. Use: repos, reports, search, or analyze" }, { status: 400 });
   } catch (error) {
-    const msg = error instanceof Error ? error.message : "Unknown error";
-    if (msg.includes("42P01") || msg.includes("CROSS_REPO_TABLES_MISSING")) {
-      return NextResponse.json(
-        { error: "Cross-repo tables not found. Run the Phase 12 SQL migration.", code: "TABLES_MISSING" },
-        { status: 503 }
-      );
-    }
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return safeErrorResponse(error, { context: "CrossRepo GET" });
   }
 }
 
@@ -136,6 +150,10 @@ export async function POST(request: Request) {
 
     // AI Analysis
     if (action === "ai-analysis") {
+      // ── Rate Limiting (stricter for AI calls) ─────────────────
+      const limited = checkRateLimit(user.id, "cross-repo-ai", aiLimit);
+      if (limited) return limited;
+
       const { metrics, techStacks, similarity, contributorComparison, techComparison } = body;
       if (!metrics || metrics.length < 2) {
         return NextResponse.json({ error: "Need at least 2 repos" }, { status: 400 });
@@ -144,11 +162,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ analysis });
     }
 
+    // ── Rate Limiting (general POST) ───────────────────────────
+    const limited = checkRateLimit(user.id, "cross-repo-post", crossRepoLimit);
+    if (limited) return limited;
+
     // Cross-Repo RAG Chat
     if (action === "rag") {
       const { repositoryIds, query, queryEmbedding } = body;
       if (!repositoryIds || !query) {
         return NextResponse.json({ error: "repositoryIds and query required" }, { status: 400 });
+      }
+      // Validate UUIDs
+      const uuidError = validateUUIDs(repositoryIds);
+      if (uuidError) {
+        return NextResponse.json({ error: uuidError }, { status: 400 });
       }
       const result = await crossRepoRAG(user.id, repositoryIds, query, queryEmbedding);
       return NextResponse.json(result);
@@ -160,12 +187,16 @@ export async function POST(request: Request) {
       if (!repositoryIds || repositoryIds.length < 2) {
         return NextResponse.json({ error: "Need at least 2 repos" }, { status: 400 });
       }
+      const uuidError = validateUUIDs(repositoryIds);
+      if (uuidError) {
+        return NextResponse.json({ error: uuidError }, { status: 400 });
+      }
       const report = await saveReport(
         user.id,
         repositoryIds,
         comparisonType as ComparisonType ?? "full",
         aiAnalysis ?? null,
-        (aiAnalysis as Record<string, unknown>)?.recommendations ?? [],
+        ((aiAnalysis as Record<string, unknown>)?.recommendations ?? []) as string[],
         reportMarkdown ?? null,
       );
       return NextResponse.json({ report });
@@ -174,13 +205,17 @@ export async function POST(request: Request) {
     // Save similarity
     if (action === "save-similarity") {
       const { repoIdA, repoIdB, similarity } = body;
+      // Validate UUIDs
+      const uuidError = validateUUIDs([repoIdA, repoIdB].filter(Boolean));
+      if (uuidError) {
+        return NextResponse.json({ error: uuidError }, { status: 400 });
+      }
       await saveSimilarity(user.id, repoIdA, repoIdB, similarity);
       return NextResponse.json({ success: true });
     }
 
     return NextResponse.json({ error: "Unknown action" }, { status: 400 });
   } catch (error) {
-    const msg = error instanceof Error ? error.message : "Unknown error";
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return safeErrorResponse(error, { context: "CrossRepo POST" });
   }
 }

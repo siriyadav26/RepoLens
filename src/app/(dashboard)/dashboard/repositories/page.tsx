@@ -8,6 +8,7 @@ import Link from "next/link";
 
 interface DbRepository {
   id: string;
+  repo_id: number;
   full_name: string;
   name: string;
   owner_login: string;

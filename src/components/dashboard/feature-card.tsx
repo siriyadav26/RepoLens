@@ -5,7 +5,7 @@ interface FeatureCardProps {
   title: string;
   description: string;
   icon: LucideIcon;
-  phase: number;
+  badge: string;
   href?: string;
   status?: "available" | "planned";
 }
@@ -14,7 +14,7 @@ export function FeatureCard({
   title,
   description,
   icon: Icon,
-  phase,
+  badge,
   href,
   status = "planned",
 }: FeatureCardProps) {
@@ -26,12 +26,12 @@ export function FeatureCard({
       <div className="feat-card-accent" />
 
       <div className="feat-card-body">
-        {/* Icon + Phase badge */}
+        {/* Icon + Category badge */}
         <div className="feat-card-top">
           <div className="feat-card-icon-wrap">
             <Icon size={22} className="feat-card-icon" />
           </div>
-          <span className="feat-card-phase">Phase {phase}</span>
+          <span className="feat-card-phase">{badge}</span>
         </div>
 
         {/* Text */}
@@ -47,7 +47,7 @@ export function FeatureCard({
                 background: isAvailable ? "#16a34a" : undefined,
               }}
             />
-            {isAvailable ? "Available" : "Planned"}
+            {isAvailable ? "Available" : "Coming Soon"}
           </span>
           <svg
             width="16"

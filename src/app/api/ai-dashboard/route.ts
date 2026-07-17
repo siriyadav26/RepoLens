@@ -19,6 +19,10 @@ import {
   getSystemHealth,
 } from "@/lib/analytics/db";
 import type { TimeGranularity } from "@/lib/analytics/types";
+import { checkRateLimit, generalLimit } from "@/lib/rate-limit";
+import { safeErrorResponse, clampInt, validateEnum } from "@/lib/api-error";
+
+const VALID_GRANULARITIES = ["daily", "weekly", "monthly"] as const;
 
 export async function GET(request: Request) {
   try {
@@ -28,10 +32,20 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // ── Rate Limiting ─────────────────────────────────────────────
+    const limited = checkRateLimit(user.id, "ai-dashboard", generalLimit);
+    if (limited) return limited;
+
     const userId = user.id;
     const { searchParams } = new URL(request.url);
-    const granularity = (searchParams.get("granularity") || "daily") as TimeGranularity;
-    const days = parseInt(searchParams.get("days") || "30", 10);
+
+    // ── Input Validation ──────────────────────────────────────────
+    const granularity = validateEnum<TimeGranularity>(
+      searchParams.get("granularity"),
+      VALID_GRANULARITIES,
+      "daily"
+    );
+    const days = clampInt(searchParams.get("days"), 1, 365, 30);
 
     // Fetch all analytics in parallel
     const [
@@ -71,13 +85,6 @@ export async function GET(request: Request) {
       systemHealth,
     });
   } catch (error) {
-    const msg = error instanceof Error ? error.message : "Unknown error";
-    if (msg.includes("42P01") || msg.includes("ANALYTICS_TABLES_MISSING")) {
-      return NextResponse.json(
-        { error: "Analytics tables not found. Please run the Phase 11 SQL migration in Supabase.", code: "TABLES_MISSING" },
-        { status: 503 }
-      );
-    }
-    return NextResponse.json({ error: msg }, { status: 500 });
+    return safeErrorResponse(error, { context: "AI Dashboard" });
   }
 }

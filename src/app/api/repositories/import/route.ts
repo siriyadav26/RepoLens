@@ -7,6 +7,8 @@ import {
   GitHubAPIError,
 } from "@/lib/github";
 import { saveRepository } from "@/lib/supabase/repositories";
+import { checkRateLimit, importLimit } from "@/lib/rate-limit";
+import { safeErrorResponse } from "@/lib/api-error";
 
 export async function POST(request: NextRequest) {
   try {
@@ -19,6 +21,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // ── Rate Limiting ─────────────────────────────────────────────
+    const limited = checkRateLimit(user.id, "import", importLimit);
+    if (limited) return limited;
+
     // Parse request body
     const body = await request.json();
     const { input } = body as { input?: string };
@@ -26,6 +32,14 @@ export async function POST(request: NextRequest) {
     if (!input || typeof input !== "string") {
       return NextResponse.json(
         { error: "Repository input is required." },
+        { status: 400 }
+      );
+    }
+
+    // ── Input Length Cap ──────────────────────────────────────────
+    if (input.length > 512) {
+      return NextResponse.json(
+        { error: "Repository input is too long." },
         { status: 400 }
       );
     }
@@ -81,10 +95,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.error("Import error:", err);
-    return NextResponse.json(
-      { error: "An unexpected error occurred. Please try again." },
-      { status: 500 }
-    );
+    return safeErrorResponse(err, { context: "Import" });
   }
 }

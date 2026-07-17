@@ -187,24 +187,24 @@ export function DashboardContent({ user, repoCount = 0 }: DashboardContentProps)
                 title="Repository Import"
                 description="Import and connect your Git repositories for deep analysis and tracking."
                 icon={FolderGit2}
-                phase={1}
+                badge="Core"
                 href="/dashboard/repositories"
               />
             </div>
             <div className="dash-stagger" style={{ animationDelay: "0.42s" }}>
               <FeatureCard
-                title="Timeline"
+                title="Commit Timeline"
                 description="Visualize commit history and track how your project evolved over time."
                 icon={Clock}
-                phase={2}
+                badge="History"
               />
             </div>
             <div className="dash-stagger" style={{ animationDelay: "0.49s" }}>
               <FeatureCard
-                title="AI Analysis"
+                title="AI Code Analysis"
                 description="Get AI-powered insights about your codebase architecture and patterns."
                 icon={Brain}
-                phase={3}
+                badge="AI Insights"
               />
             </div>
             <div className="dash-stagger" style={{ animationDelay: "0.56s" }}>
@@ -212,7 +212,7 @@ export function DashboardContent({ user, repoCount = 0 }: DashboardContentProps)
                 title="RAG Q&A"
                 description="Ask natural language questions about your code using retrieval-augmented generation."
                 icon={Search}
-                phase={4}
+                badge="Smart Search"
               />
             </div>
             <div className="dash-stagger" style={{ animationDelay: "0.63s" }}>
@@ -220,7 +220,7 @@ export function DashboardContent({ user, repoCount = 0 }: DashboardContentProps)
                 title="AI Engineering Dashboard"
                 description="Monitor LLM usage, RAG performance, provider health, and system observability."
                 icon={Activity}
-                phase={11}
+                badge="Observability"
                 href="/dashboard/ai-dashboard"
               />
             </div>

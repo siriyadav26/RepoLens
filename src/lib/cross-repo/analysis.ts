@@ -89,7 +89,7 @@ export async function getRepoMetrics(userId: string, repositoryId: string): Prom
       count: c.count,
       percentage: totalContribs > 0 ? Math.round((c.count / totalContribs) * 10000) / 100 : 0,
     })),
-    commitFrequency: stats.commitsPerMonth,
+    commitFrequency: stats.commitsPerMonth.map((m) => ({ period: m.month, count: m.count })),
   };
 }
 
@@ -556,7 +556,7 @@ export async function crossRepoRAG(
   const allCommits: { repoName: string; sha: string; message: string; author: string; date: string; additions: number; deletions: number; files: number }[] = [];
 
   for (const repoId of repositoryIds) {
-    let results: Record<string, unknown>[];
+    let results: Record<string, unknown>[] = [];
 
     if (queryEmbedding) {
       // Try vector search

@@ -108,7 +108,7 @@ export default function CrossRepoDashboard() {
   const ragEndRef = useRef<HTMLDivElement>(null);
 
   // --- Reports state ---
-  const [previousReports, setPreviousReports] = useState<CrossRepoReport["id" | "repositoryNames" | "comparisonType" | "createdAt"][]>([]);
+  const [previousReports, setPreviousReports] = useState<Pick<CrossRepoReport, "id" | "repositoryNames" | "comparisonType" | "createdAt">[]>([]);
 
   // --- Fetch repos ---
   const fetchRepos = useCallback(async () => {
@@ -930,7 +930,7 @@ export default function CrossRepoDashboard() {
             <select className="cr-search-select" value={searchLang} onChange={(e) => setSearchLang(e.target.value)}>
               <option value="">All Languages</option>
               {languages.map((l) => (
-                <option key={l} value={l}>{l}</option>
+                <option key={l ?? ""} value={l ?? ""}>{l}</option>
               ))}
             </select>
             <button className="cr-btn cr-btn-primary" onClick={handleSearch} disabled={searchLoading || !searchQuery.trim()}>
@@ -1163,6 +1163,6 @@ export default function CrossRepoDashboard() {
           )}
         </div>
       )}
-    </div>
+    </motion.div>
   );
 }

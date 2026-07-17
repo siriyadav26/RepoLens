@@ -76,9 +76,23 @@ export class GitHubAPIError extends Error {
   }
 }
 
+/** Build common GitHub API headers, injecting auth token if available */
+function githubHeaders(): Record<string, string> {
+  const headers: Record<string, string> = {
+    Accept: "application/vnd.github.v3+json",
+    "User-Agent": "RepoLens-AI/1.0",
+  };
+  // Set GITHUB_TOKEN in .env.local to raise rate limit from 60 → 5,000 req/hour
+  const token = process.env.GITHUB_TOKEN;
+  if (token) {
+    headers["Authorization"] = `token ${token}`;
+  }
+  return headers;
+}
+
 /**
  * Fetch repository metadata from GitHub REST API.
- * Uses unauthenticated endpoint (60 req/hour for public repos).
+ * Uses GITHUB_TOKEN if set (5,000 req/hour), otherwise unauthenticated (60 req/hour).
  */
 export async function fetchGitHubRepo(
   owner: string,
@@ -87,10 +101,7 @@ export async function fetchGitHubRepo(
   const url = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`;
 
   const response = await fetch(url, {
-    headers: {
-      Accept: "application/vnd.github.v3+json",
-      "User-Agent": "RepoLens-AI/1.0",
-    },
+    headers: githubHeaders(),
   });
 
   if (response.status === 404) {
@@ -215,10 +226,7 @@ export async function fetchGitHubCommits(
   const url = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/commits?${params}`;
 
   const response = await fetch(url, {
-    headers: {
-      Accept: "application/vnd.github.v3+json",
-      "User-Agent": "RepoLens-AI/1.0",
-    },
+    headers: githubHeaders(),
   });
 
   if (response.status === 404) {
@@ -290,10 +298,7 @@ export async function fetchGitHubCommitDetail(
   const url = `https://api.github.com/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}/commits/${encodeURIComponent(sha)}`;
 
   const response = await fetch(url, {
-    headers: {
-      Accept: "application/vnd.github.v3+json",
-      "User-Agent": "RepoLens-AI/1.0",
-    },
+    headers: githubHeaders(),
   });
 
   if (response.status === 404) {

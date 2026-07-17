@@ -3,7 +3,7 @@
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, easeOut } from "framer-motion";
 
 /* ── Inline RepoLens AI logo SVG ── */
 function RepoLensLogo({ className }: { className?: string }) {
@@ -45,7 +45,7 @@ const flipOut = {
     rotateY: 90,
     opacity: 0,
     scale: 0.95,
-    transition: { duration: 0.35, ease: "easeIn" },
+    transition: { duration: 0.35 },
   },
 };
 
@@ -55,7 +55,7 @@ const flipIn = {
     rotateY: 0,
     opacity: 1,
     scale: 1,
-    transition: { duration: 0.35, ease: "easeOut" },
+    transition: { duration: 0.35, ease: easeOut },
   },
 };
 
@@ -244,7 +244,7 @@ export default function AuthCard() {
           <motion.div
             className="auth-form-wrapper"
             key="signin"
-            variants={{ ...flipOut, ...flipIn }}
+            variants={({ ...flipOut, ...flipIn } as any)}
             initial="initial"
             animate="animate"
             exit="exit"
@@ -321,7 +321,7 @@ export default function AuthCard() {
           <motion.div
             className="auth-form-wrapper"
             key="signup"
-            variants={{ ...flipOut, ...flipIn }}
+            variants={({ ...flipOut, ...flipIn } as any)}
             initial="initial"
             animate="animate"
             exit="exit"

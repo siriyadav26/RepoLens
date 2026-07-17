@@ -25,7 +25,7 @@ export default function DashboardPage() {
           id: user.id,
           email: user.email ?? "",
           created_at: user.created_at,
-          last_sign_in_at: user.last_sign_in_at,
+          last_sign_in_at: user.last_sign_in_at ?? null,
         });
 
         // Fetch repo count via API
