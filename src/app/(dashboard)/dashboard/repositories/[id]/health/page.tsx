@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { HealthDashboard } from "@/components/health/health-dashboard";
 
@@ -34,6 +33,13 @@ export default function HealthPage() {
   if (loading) {
     return (
       <div className="repo-page">
+        <nav className="page-breadcrumb">
+          <Link href="/dashboard">Dashboard</Link>
+          <span className="page-breadcrumb-sep">/</span>
+          <Link href="/dashboard/repositories">Repositories</Link>
+          <span className="page-breadcrumb-sep">/</span>
+          <span className="page-breadcrumb-current">Code Health</span>
+        </nav>
         <div className="commit-detail-loading">
           <span className="dash-spinner" /> Loading...
         </div>
@@ -44,11 +50,15 @@ export default function HealthPage() {
   if (!repo) {
     return (
       <div className="repo-page">
+        <nav className="page-breadcrumb">
+          <Link href="/dashboard">Dashboard</Link>
+          <span className="page-breadcrumb-sep">/</span>
+          <Link href="/dashboard/repositories">Repositories</Link>
+          <span className="page-breadcrumb-sep">/</span>
+          <span className="page-breadcrumb-current">Code Health</span>
+        </nav>
         <div className="commit-detail-loading">
           <p>Repository not found.</p>
-          <Link href="/dashboard/repositories" className="commit-back-link">
-            <ArrowLeft size={16} /> Back to Repositories
-          </Link>
         </div>
       </div>
     );
@@ -56,11 +66,15 @@ export default function HealthPage() {
 
   return (
     <div className="repo-page">
-      <div className="repo-page-back">
-        <Link href={`/dashboard/repositories/${id}`} className="repo-page-back-link">
-          <ArrowLeft size={16} /> {repo.name}
-        </Link>
-      </div>
+      <nav className="page-breadcrumb">
+        <Link href="/dashboard">Dashboard</Link>
+        <span className="page-breadcrumb-sep">/</span>
+        <Link href="/dashboard/repositories">Repositories</Link>
+        <span className="page-breadcrumb-sep">/</span>
+        <Link href={`/dashboard/repositories/${id}`}>{repo.name}</Link>
+        <span className="page-breadcrumb-sep">/</span>
+        <span className="page-breadcrumb-current">Code Health</span>
+      </nav>
 
       <div className="commit-page-header">
         <div>

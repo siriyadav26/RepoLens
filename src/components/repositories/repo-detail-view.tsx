@@ -1,5 +1,7 @@
 "use client";
 
+import { useState } from "react";
+
 import { formatCount } from "@/lib/github";
 import {
   Star,
@@ -15,6 +17,8 @@ import {
   FileText,
   Activity,
   Network,
+  TrendingUp,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -45,6 +49,32 @@ interface RepoDetailViewProps {
 }
 
 export function RepoDetailView({ repository: r }: RepoDetailViewProps) {
+  const [indexing, setIndexing] = useState(false);
+  const [indexResult, setIndexResult] = useState<string | null>(null);
+
+  async function handleGenerateEmbeddings() {
+    setIndexing(true);
+    setIndexResult(null);
+    try {
+      const res = await fetch(`/api/repositories/${r.id}/index`, {
+        method: "POST",
+      });
+      const data = await res.json();
+      console.log("[Generate Embeddings] Result:", data);
+      if (data.success) {
+        setIndexResult(
+          `✅ Done — ${data.filesIndexed} files, ${data.embeddingsStored} embeddings in ${data.durationMs}ms`
+        );
+      } else {
+        setIndexResult(`❌ Error: ${data.error}`);
+      }
+    } catch (err) {
+      console.error(err);
+      setIndexResult("❌ Request failed");
+    } finally {
+      setIndexing(false);
+    }
+  }
   return (
     <div className="repo-detail">
       {/* Header */}
@@ -152,6 +182,14 @@ export function RepoDetailView({ repository: r }: RepoDetailViewProps) {
           <GitCommit size={16} />
           <span>View Commit History</span>
         </Link>
+        <Link href={`/dashboard/repositories/${r.id}/timeline`} className="repo-detail-commits-btn">
+          <TrendingUp size={16} />
+          <span>Commit Timeline</span>
+        </Link>
+        <Link href={`/dashboard/repositories/${r.id}/analysis`} className="repo-detail-commits-btn">
+          <Sparkles size={16} />
+          <span>AI Code Analysis</span>
+        </Link>
         <Link href={`/dashboard/repositories/${r.id}/documentation`} className="repo-detail-commits-btn">
           <FileText size={16} />
           <span>AI Documentation</span>
@@ -164,6 +202,35 @@ export function RepoDetailView({ repository: r }: RepoDetailViewProps) {
           <Network size={16} />
           <span>Architecture</span>
         </Link>
+      </div>
+
+      {/* Generate Embeddings */}
+      <div style={{ marginTop: "24px" }}>
+        <button
+          onClick={handleGenerateEmbeddings}
+          disabled={indexing}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "10px 20px",
+            background: indexing ? "#aaa" : "linear-gradient(135deg, #0f8ca3, #046276)",
+            color: "#fff",
+            border: "none",
+            borderRadius: "8px",
+            fontWeight: 600,
+            fontSize: "14px",
+            cursor: indexing ? "not-allowed" : "pointer",
+            transition: "opacity 0.2s",
+          }}
+        >
+          {indexing ? "Indexing... (this may take a few minutes)" : "⚡ Generate Embeddings"}
+        </button>
+        {indexResult && (
+          <p style={{ marginTop: "10px", fontSize: "13px", color: indexResult.startsWith("✅") ? "#0f8ca3" : "#c00" }}>
+            {indexResult}
+          </p>
+        )}
       </div>
 
       {/* Topics */}

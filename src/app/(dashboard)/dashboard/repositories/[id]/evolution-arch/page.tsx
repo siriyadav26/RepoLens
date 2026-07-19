@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { EvolutionDashboard } from "@/components/evolution/evolution-dashboard";
 
@@ -19,12 +18,12 @@ export default function EvolutionPage() {
       .catch(() => setLoading(false));
   }, [id]);
 
-  if (loading) return <div className="repo-page"><div className="commit-detail-loading"><span className="dash-spinner" /> Loading...</div></div>;
-  if (!repo) return <div className="repo-page"><div className="commit-detail-loading"><p>Repository not found.</p><Link href="/dashboard/repositories" className="commit-back-link"><ArrowLeft size={16} /> Back</Link></div></div>;
+  if (loading) return <div className="repo-page"><nav className="page-breadcrumb"><Link href="/dashboard">Dashboard</Link><span className="page-breadcrumb-sep">/</span><Link href="/dashboard/repositories">Repositories</Link><span className="page-breadcrumb-sep">/</span><span className="page-breadcrumb-current">Architecture Evolution</span></nav><div className="commit-detail-loading"><span className="dash-spinner" /> Loading...</div></div>;
+  if (!repo) return <div className="repo-page"><nav className="page-breadcrumb"><Link href="/dashboard">Dashboard</Link><span className="page-breadcrumb-sep">/</span><Link href="/dashboard/repositories">Repositories</Link><span className="page-breadcrumb-sep">/</span><span className="page-breadcrumb-current">Architecture Evolution</span></nav><div className="commit-detail-loading"><p>Repository not found.</p></div></div>;
 
   return (
     <div className="repo-page">
-      <div className="repo-page-back"><Link href={`/dashboard/repositories/${id}`} className="repo-page-back-link"><ArrowLeft size={16} /> {repo.name}</Link></div>
+      <nav className="page-breadcrumb"><Link href="/dashboard">Dashboard</Link><span className="page-breadcrumb-sep">/</span><Link href="/dashboard/repositories">Repositories</Link><span className="page-breadcrumb-sep">/</span><Link href={`/dashboard/repositories/${id}`}>{repo.name}</Link><span className="page-breadcrumb-sep">/</span><span className="page-breadcrumb-current">Architecture Evolution</span></nav>
       <div className="commit-page-header"><div><h1 className="repo-page-title">Architecture Evolution</h1><p className="repo-page-subtitle">{repo.full_name} — {repo.default_branch}</p></div></div>
       <EvolutionDashboard repositoryId={id} />
     </div>

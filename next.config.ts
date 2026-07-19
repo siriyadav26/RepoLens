@@ -35,6 +35,13 @@ const nextConfig: NextConfig = {
       },
     ];
   },
+  // ── @xenova/transformers — local embedding model ───────────────
+  // Must be treated as a server-only external (runs in Node, not browser)
+  serverExternalPackages: ["@xenova/transformers", "sharp", "onnxruntime-node"],
+
+  // Turbopack config — empty object silences the warning and allows
+  // @xenova/transformers to be loaded as a Node.js server external
+  turbopack: {},
 };
 
 export default nextConfig;

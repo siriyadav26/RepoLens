@@ -3,8 +3,6 @@
 import { useEffect, useState } from "react";
 import { RepoList } from "@/components/repositories/repo-list";
 import { RepoImportForm } from "@/components/repositories/repo-import-form";
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 
 interface DbRepository {
   id: string;
@@ -46,13 +44,6 @@ export default function RepositoriesPage() {
 
   return (
     <div className="repo-page">
-      <div className="repo-page-back">
-        <Link href="/dashboard" className="repo-page-back-link">
-          <ArrowLeft size={16} />
-          Dashboard
-        </Link>
-      </div>
-
       <div className="repo-page-header">
         <div>
           <h1 className="repo-page-title">Repositories</h1>

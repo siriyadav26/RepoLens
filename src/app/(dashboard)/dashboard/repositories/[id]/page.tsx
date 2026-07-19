@@ -3,7 +3,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { RepoDetailView } from "@/components/repositories/repo-detail-view";
-import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 interface DbRepository {
@@ -45,15 +44,24 @@ export default function RepoDetailPage() {
       .catch(() => setLoading(false));
   }, [id]);
 
+  const Breadcrumb = ({ name }: { name?: string }) => (
+    <nav className="page-breadcrumb">
+      <Link href="/dashboard">Dashboard</Link>
+      <span className="page-breadcrumb-sep">/</span>
+      <Link href="/dashboard/repositories">Repositories</Link>
+      {name && (
+        <>
+          <span className="page-breadcrumb-sep">/</span>
+          <span className="page-breadcrumb-current">{name}</span>
+        </>
+      )}
+    </nav>
+  );
+
   if (loading) {
     return (
       <div className="repo-page">
-        <div className="repo-page-back">
-          <Link href="/dashboard/repositories" className="repo-page-back-link">
-            <ArrowLeft size={16} />
-            Repositories
-          </Link>
-        </div>
+        <Breadcrumb />
         <div style={{ textAlign: "center", padding: "40px", color: "#0f8ca3" }}>
           Loading repository...
         </div>
@@ -64,12 +72,7 @@ export default function RepoDetailPage() {
   if (!repo) {
     return (
       <div className="repo-page">
-        <div className="repo-page-back">
-          <Link href="/dashboard/repositories" className="repo-page-back-link">
-            <ArrowLeft size={16} />
-            Repositories
-          </Link>
-        </div>
+        <Breadcrumb />
         <div style={{ textAlign: "center", padding: "40px", color: "#999" }}>
           Repository not found.
         </div>
@@ -79,12 +82,7 @@ export default function RepoDetailPage() {
 
   return (
     <div className="repo-page">
-      <div className="repo-page-back">
-        <Link href="/dashboard/repositories" className="repo-page-back-link">
-          <ArrowLeft size={16} />
-          Repositories
-        </Link>
-      </div>
+      <Breadcrumb name={repo.name} />
       <RepoDetailView repository={repo} />
     </div>
   );

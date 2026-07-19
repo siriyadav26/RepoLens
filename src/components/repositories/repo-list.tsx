@@ -2,7 +2,18 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Trash2, ExternalLink, Star, GitFork, Eye, CircleDot, Clock } from "lucide-react";
+import Link from "next/link";
+import {
+  Trash2,
+  ExternalLink,
+  Star,
+  GitFork,
+  Eye,
+  CircleDot,
+  Clock,
+  TrendingUp,
+  Brain,
+} from "lucide-react";
 import { formatCount } from "@/lib/github";
 
 interface RepoListItem {
@@ -127,6 +138,24 @@ export function RepoList({ repositories }: RepoListProps) {
               </span>
             </div>
             <div className="repo-list-actions">
+              {/* Commit Timeline quick-link */}
+              <Link
+                href={`/dashboard/repositories/${repo.id}/timeline`}
+                className="repo-list-action-btn repo-list-timeline-btn"
+                title="Commit Timeline"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <TrendingUp size={15} />
+              </Link>
+              {/* AI Code Analysis quick-link */}
+              <Link
+                href={`/dashboard/repositories/${repo.id}/analysis`}
+                className="repo-list-action-btn repo-list-analysis-btn"
+                title="AI Code Analysis"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Brain size={15} />
+              </Link>
               <a
                 href={repo.html_url}
                 target="_blank"
