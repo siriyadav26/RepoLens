@@ -53,11 +53,24 @@ function isIgnored(filePath: string): boolean {
     if (IGNORED_DIRS.has(parts[i])) return true;
   }
 
-  // Check file extension
-  const filename = parts[parts.length - 1];
+  // Check file extension or specific file names
+  const filename = parts[parts.length - 1].toLowerCase();
+  
+  // Ignore lockfiles & config blobs that aren't useful
+  if ([
+    "package-lock.json",
+    "yarn.lock",
+    "pnpm-lock.yaml",
+    "bun.lockb",
+    ".gitignore",
+    ".DS_Store"
+  ].includes(filename)) {
+    return true;
+  }
+
   const dotIdx = filename.lastIndexOf(".");
   if (dotIdx !== -1) {
-    const ext = filename.slice(dotIdx + 1).toLowerCase();
+    const ext = filename.slice(dotIdx + 1);
     if (IGNORED_EXTENSIONS.has(ext)) return true;
   }
 

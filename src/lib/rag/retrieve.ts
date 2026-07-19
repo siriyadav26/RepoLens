@@ -19,12 +19,24 @@ export async function retrieveContext(
 ): Promise<RetrievedChunk[]> {
   const supabase = await createClient();
 
-  // 1. Generate an embedding for the user's question
-  const queryEmbedding = await generateEmbedding(query);
+  // 1. Check if any embeddings exist for this repo
+  const { count } = await supabase
+    .from("file_embeddings")
+    .select("id", { count: "exact", head: true })
+    .eq("repository_id", repositoryId);
 
-  // 2. Call the pgvector similarity search function
-  // We format the vector array as a string since Supabase pgvector RPC 
-  // sometimes expects a string representation of the array: '[0.1, 0.2, ...]'
+  console.log(`[RAG Retrieve] Embeddings in DB for repo ${repositoryId}:`, count);
+
+  if (!count || count === 0) {
+    console.warn("[RAG Retrieve] No embeddings found — run Generate Embeddings first.");
+    return [];
+  }
+
+  // 2. Generate an embedding for the user's question
+  const queryEmbedding = await generateEmbedding(query);
+  console.log(`[RAG Retrieve] Query embedding dimensions: ${queryEmbedding.length}`);
+
+  // 3. Format as Postgres vector string
   const embeddingString = `[${queryEmbedding.join(",")}]`;
 
   const { data, error } = await supabase.rpc("match_file_embeddings", {
@@ -34,9 +46,10 @@ export async function retrieveContext(
   });
 
   if (error) {
-    console.error("Error retrieving context from Supabase:", error);
-    throw new Error("Failed to retrieve repository context");
+    console.error("[RAG Retrieve] RPC error:", JSON.stringify(error));
+    throw new Error(`Failed to retrieve repository context: ${error.message}`);
   }
 
+  console.log(`[RAG Retrieve] Chunks returned: ${data?.length ?? 0}`);
   return data as RetrievedChunk[];
 }

@@ -1779,27 +1779,144 @@
    Repository Detail — Commit History link
    ================================================================ */
 
-.repo-detail-commits-link {
-  margin-bottom: 24px;
+.repo-detail-actions-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.repo-detail-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .repo-detail-commits-btn {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 20px;
-  background: linear-gradient(135deg, #046276, #0f8ca3);
-  color: #fff;
+  gap: 7px;
+  padding: 8px 16px;
+  background: #ffffff;
+  color: #334155;
   font-size: 13px;
   font-weight: 600;
-  border-radius: 10px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
   text-decoration: none;
-  transition: opacity 0.2s, box-shadow 0.2s;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03);
 }
 
 .repo-detail-commits-btn:hover {
+  border-color: #0f8ca3;
+  color: #0f8ca3;
+  background: rgba(15, 140, 163, 0.04);
+  box-shadow: 0 2px 8px rgba(15, 140, 163, 0.12);
+}
+
+/* Embed bar */
+.repo-detail-embed-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-left: 3px solid #0f8ca3;
+  border-radius: 10px;
+  flex-wrap: wrap;
+}
+
+.repo-detail-embed-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.repo-detail-embed-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.repo-detail-embed-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.repo-detail-embed-sub {
+  font-size: 12px;
+  color: #64748b;
+  margin: 3px 0 0;
+}
+
+.repo-detail-embed-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.repo-detail-embed-status {
+  font-size: 12px;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 6px;
+}
+
+.repo-detail-embed-status--ok {
+  background: rgba(16, 185, 129, 0.08);
+  color: #065f46;
+  border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+.repo-detail-embed-status--err {
+  background: rgba(239, 68, 68, 0.08);
+  color: #991b1b;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.repo-detail-embed-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 20px;
+  background: linear-gradient(135deg, #0f8ca3, #046276);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+  white-space: nowrap;
+}
+
+.repo-detail-embed-btn:hover:not(:disabled) {
   opacity: 0.9;
-  box-shadow: 0 4px 14px rgba(4, 98, 118, 0.25);
+  transform: translateY(-1px);
+}
+
+.repo-detail-embed-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.repo-detail-embed-spinner {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: embed-spin 0.7s linear infinite;
+}
+
+@keyframes embed-spin {
+  to { transform: rotate(360deg); }
 }
 
 /* ================================================================

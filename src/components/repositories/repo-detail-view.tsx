@@ -177,65 +177,95 @@ export function RepoDetailView({ repository: r }: RepoDetailViewProps) {
       </div>
 
       {/* Action Links */}
-      <div className="repo-detail-commits-link" style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
-        <Link href={`/dashboard/repositories/${r.id}/commits`} className="repo-detail-commits-btn">
-          <GitCommit size={16} />
-          <span>View Commit History</span>
-        </Link>
-        <Link href={`/dashboard/repositories/${r.id}/timeline`} className="repo-detail-commits-btn">
-          <TrendingUp size={16} />
-          <span>Commit Timeline</span>
-        </Link>
-        <Link href={`/dashboard/repositories/${r.id}/analysis`} className="repo-detail-commits-btn">
-          <Sparkles size={16} />
-          <span>AI Code Analysis</span>
-        </Link>
-        <Link href={`/dashboard/repositories/${r.id}/documentation`} className="repo-detail-commits-btn">
-          <FileText size={16} />
-          <span>AI Documentation</span>
-        </Link>
-        <Link href={`/dashboard/repositories/${r.id}/health`} className="repo-detail-commits-btn">
-          <Activity size={16} />
-          <span>Code Health</span>
-        </Link>
-        <Link href={`/dashboard/repositories/${r.id}/evolution-arch`} className="repo-detail-commits-btn">
-          <Network size={16} />
-          <span>Architecture</span>
-        </Link>
-        <Link href={`/dashboard/repositories/${r.id}/chat`} className="repo-detail-commits-btn">
-          <Sparkles size={16} />
-          <span>RAG Q&amp;A</span>
-        </Link>
+      <div style={{ display: "flex", flexDirection: "column", gap: "16px", marginBottom: "28px" }}>
+        {/* Nav buttons */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+          <Link href={`/dashboard/repositories/${r.id}/commits`} className="repo-detail-commits-btn">
+            <GitCommit size={15} /><span>Commits</span>
+          </Link>
+          <Link href={`/dashboard/repositories/${r.id}/timeline`} className="repo-detail-commits-btn">
+            <TrendingUp size={15} /><span>Timeline</span>
+          </Link>
+          <Link href={`/dashboard/repositories/${r.id}/analysis`} className="repo-detail-commits-btn">
+            <Sparkles size={15} /><span>AI Analysis</span>
+          </Link>
+          <Link href={`/dashboard/repositories/${r.id}/documentation`} className="repo-detail-commits-btn">
+            <FileText size={15} /><span>Docs</span>
+          </Link>
+          <Link href={`/dashboard/repositories/${r.id}/health`} className="repo-detail-commits-btn">
+            <Activity size={15} /><span>Health</span>
+          </Link>
+          <Link href={`/dashboard/repositories/${r.id}/evolution-arch`} className="repo-detail-commits-btn">
+            <Network size={15} /><span>Architecture</span>
+          </Link>
+          <Link href={`/dashboard/repositories/${r.id}/chat`} className="repo-detail-commits-btn">
+            <Sparkles size={15} /><span>RAG Q&amp;A</span>
+          </Link>
+        </div>
+
+        {/* Embed bar — inline styled for reliability */}
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "14px",
+          padding: "16px 20px",
+          background: "#f0fdf9",
+          border: "1px solid #a7f3d0",
+          borderLeft: "4px solid #0f8ca3",
+          borderRadius: "10px",
+        }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+            <span style={{ fontSize: "24px", lineHeight: 1 }}>⚡</span>
+            <div>
+              <p style={{ margin: 0, fontWeight: 700, fontSize: "14px", color: "#0f172a" }}>
+                RAG Embeddings
+              </p>
+              <p style={{ margin: "3px 0 0", fontSize: "12px", color: "#64748b" }}>
+                Index this repository to enable AI Q&amp;A
+              </p>
+            </div>
+          </div>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+            {indexResult && (
+              <span style={{
+                fontSize: "12px",
+                fontWeight: 500,
+                padding: "4px 10px",
+                borderRadius: "6px",
+                background: indexResult.startsWith("✅") ? "rgba(16,185,129,0.1)" : "rgba(239,68,68,0.1)",
+                color: indexResult.startsWith("✅") ? "#065f46" : "#991b1b",
+                border: indexResult.startsWith("✅") ? "1px solid rgba(16,185,129,0.25)" : "1px solid rgba(239,68,68,0.25)",
+              }}>
+                {indexResult}
+              </span>
+            )}
+            <button
+              onClick={handleGenerateEmbeddings}
+              disabled={indexing}
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "8px",
+                padding: "9px 20px",
+                background: indexing ? "#94a3b8" : "linear-gradient(135deg, #0f8ca3, #046276)",
+                color: "#fff",
+                border: "none",
+                borderRadius: "8px",
+                fontWeight: 600,
+                fontSize: "13px",
+                cursor: indexing ? "not-allowed" : "pointer",
+                whiteSpace: "nowrap",
+                transition: "opacity 0.2s",
+              }}
+            >
+              {indexing ? "⏳ Indexing..." : "⚡ Generate Embeddings"}
+            </button>
+          </div>
+        </div>
       </div>
 
-      {/* Generate Embeddings */}
-      <div style={{ marginTop: "24px" }}>
-        <button
-          onClick={handleGenerateEmbeddings}
-          disabled={indexing}
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "10px 20px",
-            background: indexing ? "#aaa" : "linear-gradient(135deg, #0f8ca3, #046276)",
-            color: "#fff",
-            border: "none",
-            borderRadius: "8px",
-            fontWeight: 600,
-            fontSize: "14px",
-            cursor: indexing ? "not-allowed" : "pointer",
-            transition: "opacity 0.2s",
-          }}
-        >
-          {indexing ? "Indexing... (this may take a few minutes)" : "⚡ Generate Embeddings"}
-        </button>
-        {indexResult && (
-          <p style={{ marginTop: "10px", fontSize: "13px", color: indexResult.startsWith("✅") ? "#0f8ca3" : "#c00" }}>
-            {indexResult}
-          </p>
-        )}
-      </div>
 
       {/* Topics */}
       {r.topics.length > 0 && (

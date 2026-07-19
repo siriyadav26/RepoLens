@@ -37,11 +37,11 @@ const ALLOWED_KEYWORDS = [
   "component", "hook", "context", "props", "state",
   "function", "class", "interface", "type", "enum",
   "config", "env", "environment", "variable",
-  "package", "dependency", "install", "build", "deploy",
-  "test", "spec", "mock",
+  "package", "dependency", "dependencies", "install", "build", "deploy", "version",
+  "test", "spec", "mock", "library", "libraries", "framework", "scripts", "setup",
   "middleware", "server", "client",
   "index", "chunk", "pipeline",
-  "how does", "where is", "explain the", "what is the", "which file",
+  "how does", "where is", "explain the", "what is the", "which file", "how to use",
 ];
 
 /**
