@@ -19,10 +19,11 @@ export async function POST(
 ) {
   try {
     const { id: repoId } = await params;
-    const { message } = await request.json();
+    const body = await request.json();
+    const message = body.message || body.question;
 
     if (!message || typeof message !== "string") {
-      return NextResponse.json({ error: "Message is required" }, { status: 400 });
+      return NextResponse.json({ error: "Message or question is required" }, { status: 400 });
     }
 
     const supabase = await createClient();
@@ -97,10 +98,12 @@ export async function POST(
       throw new Error("Empty response from Groq");
     }
 
-    // Format citations
+    // Format citations supporting both keys for compatibility
     const citations = chunks.map(c => ({
       source: c.file_path,
-      score: Number(c.similarity.toFixed(2)) // E.g. 0.93
+      file_path: c.file_path,
+      score: Number(c.similarity.toFixed(2)),
+      similarity: Number(c.similarity.toFixed(2))
     }));
 
     return NextResponse.json({
