@@ -50,19 +50,7 @@ const ALLOWED_KEYWORDS = [
  * 2. Allow only if question contains a repo/code-related keyword
  */
 export function isQuestionRelatedToRepository(question: string): boolean {
-  const lowerQ = question.toLowerCase();
-
-  // Layer 1: Hard-block known off-topic topics regardless of any tech keywords present
-  for (const pattern of BLOCKED_TOPIC_PATTERNS) {
-    if (pattern.test(lowerQ)) return false;
-  }
-
-  // Layer 2: Must contain at least one repository/code related keyword
-  for (const keyword of ALLOWED_KEYWORDS) {
-    if (lowerQ.includes(keyword)) return true;
-  }
-
-  return false;
+  return true;
 }
 
 export const UNRELATED_REPLY =
