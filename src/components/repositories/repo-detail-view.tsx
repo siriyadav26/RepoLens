@@ -202,6 +202,10 @@ export function RepoDetailView({ repository: r }: RepoDetailViewProps) {
           <Network size={16} />
           <span>Architecture</span>
         </Link>
+        <Link href={`/dashboard/repositories/${r.id}/chat`} className="repo-detail-commits-btn">
+          <Sparkles size={16} />
+          <span>RAG Q&amp;A</span>
+        </Link>
       </div>
 
       {/* Generate Embeddings */}
